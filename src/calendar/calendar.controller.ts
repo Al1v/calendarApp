@@ -9,18 +9,14 @@ import {
   Query,
   UsePipes,
   ValidationPipe,
-  HttpCode,
   HttpStatus,
-  Res,
   HttpException
 } from '@nestjs/common';
 import { CalendarService } from './calendar.service';
-import { CreateEventDto } from './DTO/createEvent.dto';
-import { UpdateEventDto } from './DTO/updateEvent.dto';
+import { CreateEventDto } from './DTO/create-event.dto';
+import { UpdateEventDto } from './DTO/update-event.dto';
 import { Event } from './models/event.model';
 import { RecurringEventException } from './models/recurring-event-exception.model';
-import express, { Request, Response } from 'express';
-import { throwError } from 'rxjs';
 
 @Controller('calendar')
 export class CalendarController {
