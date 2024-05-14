@@ -101,5 +101,5 @@ b) edit recurring event instance. Sample body:
 ```
 5 DELETE http://localhost:5000/calendar/events/:eventId  
 6 GET http://localhost:5000/calendar/events/:eventId   
-7 GET http://localhost:5000/calendar/events?fromDate=2024-05-01T00:00:00&toDate=2024-05-26T23:59:59 
+7 GET http://localhost:5000/calendar/events?fromDate=2024-05-01T00:00:00&toDate=2024-05-26T23:59:59   
 get events in the specified time range. The fromDate and toDate are mandatory params.  
