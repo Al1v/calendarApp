@@ -37,3 +37,8 @@ Task:
 
 Due to episodical experience with testing, setting up testing infrastructure and designing test cases took me unreasonably
 long time. Unfortunately I couldn't complete the requirements concerning code testing
+
+Setting up the app:
+use command docker compose up and the app would be available on localhost:5000
+
+
