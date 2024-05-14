@@ -1,18 +1,8 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  Query,
-  UsePipes,
-  ValidationPipe,
-  HttpStatus,
-  HttpException
-} from '@nestjs/common';
-import { CalendarService } from './calendar.service';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UsePipes, ValidationPipe, HttpStatus, HttpException, Inject } from '@nestjs/common';
+import { CreateUserDto } from 'src/user/DTO/create-user.dto';
+import { User } from 'src/user/models/user.model';
+import { UserService } from 'src/user/user.service';
+import { CalendarServiceInterface } from './calendar.service.interface';
 import { CreateEventDto } from './DTO/create-event.dto';
 import { UpdateEventDto } from './DTO/update-event.dto';
 import { Event } from './models/event.model';
@@ -20,8 +10,19 @@ import { RecurringEventException } from './models/recurring-event-exception.mode
 
 @Controller('calendar')
 export class CalendarController {
-  constructor(private readonly calendarService: CalendarService) {}
+  constructor(
+    @Inject('CalendarServiceInterface') private readonly calendarService: CalendarServiceInterface,
+    private readonly userService: UserService
+  ) {}
 
+  @Post('users')
+  async createUser(@Body() userData: CreateUserDto): Promise<User> {
+    return this.userService.createUser(userData);
+  }
+  @Get('users')
+  async getUsers(): Promise<User[]> {
+    return this.userService.getUsers();
+  }
   @Post('events')
   async createEvent(@Body() event: CreateEventDto): Promise<Event> {
     return this.calendarService.createEvent(event);

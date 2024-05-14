@@ -1,15 +1,17 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
+import { Between, LessThan, Repository } from 'typeorm';
+import { CalendarServiceInterface } from './calendar.service.interface';
 import { CreateEventDto } from './DTO/create-event.dto';
 import { UpdateEventDto } from './DTO/update-event.dto';
 import { Event } from './models/event.model';
 import { RecurringEventException } from './models/recurring-event-exception.model';
 
+
 type EventInstance = Event & { isInstance: boolean };
 
 @Injectable()
-export class CalendarService {
+export class CalendarService implements CalendarServiceInterface {
   constructor(
     @InjectRepository(Event)
     private readonly eventRepository: Repository<Event>,
@@ -18,7 +20,7 @@ export class CalendarService {
   ) {}
 
   async createEvent(event: CreateEventDto): Promise<Event> {
-    return this.eventRepository.save(event);
+    return await this.eventRepository.save(event);
   }
 
   async getEvent(id: number): Promise<Event> {
@@ -38,7 +40,6 @@ export class CalendarService {
         }
       });
       if (exceptionInstance) {
-        console.log(exceptionInstance);
         Object.assign(exceptionInstance, updatedEvent);
         return await this.exceptionRepository.save({
           ...exceptionInstance,
@@ -69,10 +70,14 @@ export class CalendarService {
   }
 
   async getEventsInRange(fromDate: Date, toDate: Date): Promise<Event[]> {
-    try {
+
       const allEvents = await this.eventRepository.find({
-        where: [{ startDate: Between(fromDate, toDate) }, { endDate: Between(fromDate, toDate) }]
+        where: [{ startDate: Between(fromDate, toDate) }, { endDate: Between(fromDate, toDate), },   { 
+          startDate: LessThan(fromDate), // Events starting before or on fromDate
+          recurring: true
+        }, ]
       });
+   
 
       const recurringEventExceptions = await this.exceptionRepository.find({
         where: [{ newStartDate: Between(fromDate, toDate) }, { newEndDate: Between(fromDate, toDate) }],
@@ -83,23 +88,19 @@ export class CalendarService {
       const recurringEventInstances: Event[] = [];
 
       recurringEvents.forEach(event => {
-        const instances = this.calculateRecurringEventInstances(event, toDate, recurringEventExceptions);
+        const instances = this.calculateRecurringEventInstances(event, fromDate, toDate, recurringEventExceptions);
 
         recurringEventInstances.push(...instances);
       });
 
       const uniqueEvents = [...nonRecurringEvents, ...recurringEventInstances];
       return uniqueEvents;
-    } catch (error) {
-      console.log(error);
-      throw new Error(error);
-    }
   }
 
-  private calculateRecurringEventInstances(event: Event, toDate: Date, exceptions: RecurringEventException[]): Event[] {
+  private calculateRecurringEventInstances(event: Event, fromDate: Date, toDate: Date, exceptions: RecurringEventException[]): Event[] {
     const instances: Event[] | EventInstance = [];
 
-    let currentDate = new Date(event.startDate);
+    let currentDate = new Date(event.startDate > fromDate ? event.startDate : fromDate);
 
     while (currentDate <= toDate) {
       if (this.matchesRecurrencePattern(event, currentDate)) {
