@@ -28,15 +28,15 @@ Task:
   
 1 Write a NestJS controller endpoint and service to perform the changeEventDate API. -done  
 2 Define the parameters required (note, changed event can be a simple event or part of a recurring series) - done  
-3 Write the tested controller, dependent services and repositories for the test - partially done  
+3 Write the tested controller, dependent services and repositories for the test -  done  
 4 Controller is injected with 2 services (Calendar service based on the above interface, User service) - done  
 5 Services use typeorm repositories for data access - done  
-6 The tested code should not access the database - not done  
+6 The tested code should not access the database - done
 7 The test should check that N records were read from user repository  - not done  
 8 The test should check that a record was updated in calendar repository - not done  
   
 Due to episodical experience with testing, setting up testing infrastructure and designing test cases took me unreasonably  
-long time. Unfortunately I couldn't complete the requirements concerning code testing  
+long time. Unfortunately I couldn't complete all the requirements concerning code testing  
 
 Setting up the app:  
 use command docker compose up and the app would be available on localhost:5000  
