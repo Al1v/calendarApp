@@ -41,4 +41,41 @@ long time. Unfortunately I couldn't complete the requirements concerning code te
 Setting up the app:
 use command docker compose up and the app would be available on localhost:5000
 
-
+available endpoints: 
+1 POST: http://localhost:5000/user - create a user providing body:
+{	
+		"name": "test",
+		"role": "company"
+}
+2 GET: http://localhost:5000/user - see all users
+3 POST http://localhost:5000/calendar/events - create event. Sample body:
+{
+		"name": "Sample Event",
+		"startDate": "2024-05-21T08:00:00.000Z",
+		"endDate": "2024-05-21T08:00:00.000Z",
+		"recurring": true,
+		"recurrencePattern": "daily",
+	"users": [
+		{
+			"id": 1,
+			"name": "test",
+			"role": "company"
+		}
+	]
+}
+4 PUT http://localhost:5000/calendar/events
+a) edit parent event. Sample body:
+{
+		"name": "Sample Event",
+		"startDate": "2024-05-21T08:00:00.000Z",
+		"endDate": "2024-05-21T08:00:00.000Z",
+		"recurring": false,
+	"users": [
+		{
+			"id": 1,
+			"name": "test",
+			"role": "company"
+		}
+	]
+}
+b) edit event instance. Sample body:...
