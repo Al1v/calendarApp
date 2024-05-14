@@ -63,7 +63,7 @@ available endpoints:
 		}
 	]
 }
-4 PUT http://localhost:5000/calendar/events
+4 PUT http://localhost:5000/calendar/events/:eventId
 a) edit parent event. Sample body:
 {
 		"name": "Sample Event",
@@ -78,4 +78,20 @@ a) edit parent event. Sample body:
 		}
 	]
 }
-b) edit event instance. Sample body:...
+b) edit recurring event instance. Sample body:
+{
+		"id": 2,
+		"name": "Sample Event",
+		"startDate": "2024-05-23T08:00:00.000Z",
+		"endDate": "2024-05-23T08:00:00.000Z",
+		"newStartDate": "2024-05-23T08:00:00.000Z",
+		"newEndDate": "2024-05-23T08:00:00.000Z",
+		"recurring": true,
+		"isCancelled": true,
+		"recurrencePattern": "daily",
+		"isInstance": true
+}
+5 DELETE http://localhost:5000/calendar/events/:eventId
+6 GET http://localhost:5000/calendar/events/:eventId 
+7 GET http://localhost:5000/calendar/events?fromDate=2024-05-01T00:00:00&toDate=2024-05-26T23:59:59 - get events in the specified time range
+The fromDate and toDate are mandatory params.
