@@ -42,14 +42,14 @@ Setting up the app:
 use command docker compose up and the app would be available on localhost:5000  
   
 available endpoints:  
-1 POST: http://localhost:5000/user - create a user providing body: 
+1 POST: http://localhost:5000/users - create a user providing body: 
 ```
 {	
 		"name": "test",
 		"role": "company"
 }
 ```
-2 GET: http://localhost:5000/user - see all users  
+2 GET: http://localhost:5000/users - see all users  
 3 POST http://localhost:5000/calendar/events - create event. Sample body:  
 ```
 {

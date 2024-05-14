@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
-import { CreateEventDto } from './DTO/createEvent.dto';
-import { UpdateEventDto } from './DTO/updateEvent.dto';
+import { CreateEventDto } from './DTO/create-event.dto';
+import { UpdateEventDto } from './DTO/update-event.dto';
 import { Event } from './models/event.model';
 import { RecurringEventException } from './models/recurring-event-exception.model';
 
@@ -27,6 +27,9 @@ export class CalendarService {
 
   async updateEvent(eventId: number, updatedEvent: UpdateEventDto): Promise<RecurringEventException | Event> {
     const event = await this.eventRepository.findOne({ where: { id: eventId } });
+    if(!event){
+      throw new HttpException("event not found", HttpStatus.NOT_FOUND)
+    }
     if (updatedEvent.isInstance) {
       const exceptionInstance = await this.exceptionRepository.findOne({
         where: {
@@ -34,9 +37,8 @@ export class CalendarService {
           startDate: new Date(updatedEvent.startDate)
         }
       });
-      console.log(event)
       if (exceptionInstance) {
-        console.log(exceptionInstance)
+        console.log(exceptionInstance);
         Object.assign(exceptionInstance, updatedEvent);
         return await this.exceptionRepository.save({
           ...exceptionInstance,
@@ -67,7 +69,6 @@ export class CalendarService {
   }
 
   async getEventsInRange(fromDate: Date, toDate: Date): Promise<Event[]> {
-    console.log('foo')
     try {
       const allEvents = await this.eventRepository.find({
         where: [{ startDate: Between(fromDate, toDate) }, { endDate: Between(fromDate, toDate) }]
