@@ -42,13 +42,16 @@ Setting up the app:
 use command docker compose up and the app would be available on localhost:5000  
   
 available endpoints:  
-1 POST: http://localhost:5000/user - create a user providing body:  
+1 POST: http://localhost:5000/user - create a user providing body: 
+```
 {	
 		"name": "test",
 		"role": "company"
 }
+```
 2 GET: http://localhost:5000/user - see all users  
 3 POST http://localhost:5000/calendar/events - create event. Sample body:  
+```
 {
 		"name": "Sample Event",
 		"startDate": "2024-05-21T08:00:00.000Z",
@@ -63,8 +66,10 @@ available endpoints:
 		}
 	]
 }
+```
 4 PUT http://localhost:5000/calendar/events/:eventId  
 a) edit parent event. Sample body:  
+```
 {
 		"name": "Sample Event",
 		"startDate": "2024-05-21T08:00:00.000Z",
@@ -78,7 +83,9 @@ a) edit parent event. Sample body:
 		}
 	]
 }
+```
 b) edit recurring event instance. Sample body:  
+```
 {
 		"id": 2,
 		"name": "Sample Event",
@@ -91,6 +98,7 @@ b) edit recurring event instance. Sample body:
 		"recurrencePattern": "daily",
 		"isInstance": true
 }
+```
 5 DELETE http://localhost:5000/calendar/events/:eventId  
 6 GET http://localhost:5000/calendar/events/:eventId   
 7 GET http://localhost:5000/calendar/events?fromDate=2024-05-01T00:00:00&toDate=2024-05-26T23:59:59 
