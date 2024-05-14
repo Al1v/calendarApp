@@ -34,14 +34,14 @@ Task:
 6 The tested code should not access the database - not done  
 7 The test should check that N records were read from user repository  - not done  
 8 The test should check that a record was updated in calendar repository - not done  
+  
+Due to episodical experience with testing, setting up testing infrastructure and designing test cases took me unreasonably  
+long time. Unfortunately I couldn't complete the requirements concerning code testing  
 
-Due to episodical experience with testing, setting up testing infrastructure and designing test cases took me unreasonably
-long time. Unfortunately I couldn't complete the requirements concerning code testing
-
-Setting up the app:
-use command docker compose up and the app would be available on localhost:5000
-
-available endpoints: 
+Setting up the app:  
+use command docker compose up and the app would be available on localhost:5000  
+  
+available endpoints:  
 1 POST: http://localhost:5000/user - create a user providing body:  
 {	
 		"name": "test",
