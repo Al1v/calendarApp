@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, UsePipes, ValidationPipe, HttpStatus, HttpException, Inject } from '@nestjs/common';
-import { CreateUserDto } from 'src/user/DTO/create-user.dto';
-import { User } from 'src/user/models/user.model';
-import { UserService } from 'src/user/user.service';
+import { CreateUserDto } from '../user/DTO/create-user.dto';
+import { User } from '../user/models/user.model';
+import { UserService } from '../user/user.service';
 import { CalendarServiceInterface } from './calendar.service.interface';
 import { CreateEventDto } from './DTO/create-event.dto';
 import { UpdateEventDto } from './DTO/update-event.dto';

@@ -7,7 +7,6 @@ import { UpdateEventDto } from './DTO/update-event.dto';
 import { Event } from './models/event.model';
 import { RecurringEventException } from './models/recurring-event-exception.model';
 
-
 type EventInstance = Event & { isInstance: boolean };
 
 @Injectable()
@@ -24,13 +23,13 @@ export class CalendarService implements CalendarServiceInterface {
   }
 
   async getEvent(id: number): Promise<Event> {
-    return await this.eventRepository.findOne({ where: { id } });
+    return await this.eventRepository.findOne({ where: { id }, relations: ['users'] });
   }
 
   async updateEvent(eventId: number, updatedEvent: UpdateEventDto): Promise<RecurringEventException | Event> {
-    const event = await this.eventRepository.findOne({ where: { id: eventId } });
-    if(!event){
-      throw new HttpException("event not found", HttpStatus.NOT_FOUND)
+    const event = await this.eventRepository.findOne({ where: { id: eventId }, relations: ['users'] });
+    if (!event) {
+      throw new HttpException('Event with ID ${eventId} not found', HttpStatus.NOT_FOUND);
     }
     if (updatedEvent.isInstance) {
       const exceptionInstance = await this.exceptionRepository.findOne({
@@ -39,29 +38,28 @@ export class CalendarService implements CalendarServiceInterface {
           startDate: new Date(updatedEvent.startDate)
         }
       });
+
       if (exceptionInstance) {
         Object.assign(exceptionInstance, updatedEvent);
-        return await this.exceptionRepository.save({
+        const result = await this.exceptionRepository.save({
           ...exceptionInstance,
           event: event
         });
+        return result;
       }
 
       const newExceptionInstance = await this.exceptionRepository.save({
         ...updatedEvent,
+        newStartDate: updatedEvent.newStartDate ? updatedEvent.newStartDate : updatedEvent.startDate,
+        newEndDate: updatedEvent.newEndDate ? updatedEvent.newEndDate : updatedEvent.endDate,
         event: event
       });
+
       return newExceptionInstance;
     }
-    const eventToUpdate = await this.eventRepository.findOne({
-      where: { id: eventId }
-    });
 
-    if (!eventToUpdate) {
-      throw new Error(`Event with ID ${eventId} not found`);
-    }
-    Object.assign(eventToUpdate, updatedEvent);
-    const updatedEventEntity = await this.eventRepository.save(eventToUpdate);
+    Object.assign(event, updatedEvent);
+    const updatedEventEntity = await this.eventRepository.save(event);
     return updatedEventEntity;
   }
 
@@ -70,31 +68,34 @@ export class CalendarService implements CalendarServiceInterface {
   }
 
   async getEventsInRange(fromDate: Date, toDate: Date): Promise<Event[]> {
-
-      const allEvents = await this.eventRepository.find({
-        where: [{ startDate: Between(fromDate, toDate) }, { endDate: Between(fromDate, toDate), },   { 
-          startDate: LessThan(fromDate), // Events starting before or on fromDate
+    const allEvents = await this.eventRepository.find({
+      where: [
+        { startDate: Between(fromDate, toDate) },
+        { endDate: Between(fromDate, toDate) },
+        {
+          startDate: LessThan(fromDate), 
           recurring: true
-        }, ]
-      });
-   
+        }
+      ],
+      relations: ['users']
+    });
 
-      const recurringEventExceptions = await this.exceptionRepository.find({
-        where: [{ newStartDate: Between(fromDate, toDate) }, { newEndDate: Between(fromDate, toDate) }],
-        relations: ['event']
-      });
-      const nonRecurringEvents = allEvents.filter(event => !event.recurring);
-      const recurringEvents = allEvents.filter(event => event.recurring);
-      const recurringEventInstances: Event[] = [];
+    const recurringEventExceptions = await this.exceptionRepository.find({
+      where: [{ newStartDate: Between(fromDate, toDate) }, { newEndDate: Between(fromDate, toDate) }],
+      relations: ['event']
+    });
 
-      recurringEvents.forEach(event => {
-        const instances = this.calculateRecurringEventInstances(event, fromDate, toDate, recurringEventExceptions);
+    const nonRecurringEvents = allEvents.filter(event => !event.recurring);
+    const recurringEvents = allEvents.filter(event => event.recurring);
+    const recurringEventInstances: Event[] = [];
 
-        recurringEventInstances.push(...instances);
-      });
+    recurringEvents.forEach(event => {
+      const instances = this.calculateRecurringEventInstances(event, fromDate, toDate, recurringEventExceptions)
 
-      const uniqueEvents = [...nonRecurringEvents, ...recurringEventInstances];
-      return uniqueEvents;
+      recurringEventInstances.push(...instances);
+    });
+
+    return [...nonRecurringEvents, ...recurringEventInstances];
   }
 
   private calculateRecurringEventInstances(event: Event, fromDate: Date, toDate: Date, exceptions: RecurringEventException[]): Event[] {

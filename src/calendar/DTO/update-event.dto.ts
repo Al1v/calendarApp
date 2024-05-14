@@ -3,6 +3,7 @@ import { User } from 'src/user/models/user.model';
 import { CreateEventDto } from './create-event.dto';
 
 export class UpdateEventDto extends CreateEventDto {
+  
   @IsOptional()
   users: User[];
 
@@ -21,4 +22,5 @@ export class UpdateEventDto extends CreateEventDto {
   @IsOptional()
   @IsBoolean()
   isCancelled: boolean = false;
+  
 }

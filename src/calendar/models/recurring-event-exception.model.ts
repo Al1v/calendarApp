@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 't
 import { Event } from './event.model';
 
 
-@Entity({ name: 'Recurring-event-exceptions' })
+@Entity({ name: 'Recurring_event_exceptions' })
 export class RecurringEventException {
   @PrimaryGeneratedColumn()
   id: number;
