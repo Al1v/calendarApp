@@ -34,8 +34,9 @@ export class CalendarService {
           startDate: new Date(updatedEvent.startDate)
         }
       });
-
+      console.log(event)
       if (exceptionInstance) {
+        console.log(exceptionInstance)
         Object.assign(exceptionInstance, updatedEvent);
         return await this.exceptionRepository.save({
           ...exceptionInstance,
@@ -66,8 +67,8 @@ export class CalendarService {
   }
 
   async getEventsInRange(fromDate: Date, toDate: Date): Promise<Event[]> {
+    console.log('foo')
     try {
-      
       const allEvents = await this.eventRepository.find({
         where: [{ startDate: Between(fromDate, toDate) }, { endDate: Between(fromDate, toDate) }]
       });
@@ -133,6 +134,6 @@ export class CalendarService {
   }
 
   private isExceptionDate(date: Date, exceptions: RecurringEventException[], eventId: number): RecurringEventException {
-    return exceptions.find(exception => exception.newStartDate.toDateString() === date.toDateString() && exception.event.id == eventId);
+    return exceptions.find(exception => exception.newStartDate.toDateString() === date.toDateString() && exception.event?.id == eventId);
   }
 }
